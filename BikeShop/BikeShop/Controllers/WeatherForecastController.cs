@@ -1,33 +1,25 @@
+using BikeShop.BL.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BikeShop.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
-    public class WeatherForecastController : ControllerBase
+    [Route("api/bike")]
+    public class BikeShopController : ControllerBase
     {
-        private static readonly string[] Summaries = new[]
-        {
-            "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-        };
+        private readonly ILogger<BikeShopController> _logger;
+        private IBikeService _bikeService;
 
-        private readonly ILogger<WeatherForecastController> _logger;
-
-        public WeatherForecastController(ILogger<WeatherForecastController> logger)
+        public BikeShopController(ILogger<BikeShopController> logger, IBikeService bikeService)
         {
             _logger = logger;
+            _bikeService = bikeService;
         }
 
-        [HttpGet]
-        public IEnumerable<WeatherForecast> Get()
-        {
-            return Enumerable.Range(1, 5).Select(index => new WeatherForecast
-            {
-                Date = DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-                TemperatureC = Random.Shared.Next(-20, 55),
-                Summary = Summaries[Random.Shared.Next(Summaries.Length)]
-            })
-            .ToArray();
+        [HttpGet("getAllBikes")]
+        public IActionResult GetAllBikes()
+        {  
+            return Ok(_bikeService.GetAllBikes());
         }
     }
 }

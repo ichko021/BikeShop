@@ -1,6 +1,7 @@
-﻿using BikeShop.DTO;
+﻿using BikeShop.DL.Interfaces;
+using BikeShop.DTO;
 
-namespace BikeShop.DL
+namespace BikeShop.DL.Repositories
 {
     public class BikeRepository : IBikeRepository
     {

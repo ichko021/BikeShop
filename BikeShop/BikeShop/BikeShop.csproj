@@ -7,4 +7,9 @@
     <InvariantGlobalization>true</InvariantGlobalization>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\BikeShop.BL\BikeShop.BL.csproj" />
+    <ProjectReference Include="..\BikeShop.DTO\BikeShop.DTO.csproj" />
+  </ItemGroup>
+
 </Project>

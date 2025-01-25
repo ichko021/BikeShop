@@ -1,8 +1,8 @@
 ﻿using BikeShop.DTO;
 
-namespace BikeShop.DL
+namespace BikeShop.BL.Interfaces
 {
-    public interface IBikeRepository
+    public interface IBikeService
     {
         List<Bike> GetAllBikes();
         Bike? GetBikeById(int id);
