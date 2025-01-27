@@ -1,8 +1,13 @@
-﻿namespace BikeShop.DTO
+﻿using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Attributes;
+
+namespace BikeShop.DTO
 {
     public class Bike
     {
-        public int id { get; set; }
+        [BsonId]
+        [BsonRepresentation(BsonType.ObjectId)]
+        public string id { get; set; }
         public string brand { get; set; }
         public string model { get; set; }
         public double price { get; set; }

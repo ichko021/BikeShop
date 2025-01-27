@@ -1,6 +1,6 @@
-@BikeShop_HostAddress = http://localhost:5009
+@BikeShop_HostAddress = http://localhost:7274
 
-GET {{BikeShop_HostAddress}}/weatherforecast/
+GET {{BikeShop_HostAddress}}/swagger/
 Accept: application/json
 
 ###

@@ -6,7 +6,7 @@ namespace BikeShop.BL.Services
 {
     internal class BikeService : IBikeService
     {
-        private IBikeRepository _bikeRepository;
+        private readonly IBikeRepository _bikeRepository;
 
         public BikeService(IBikeRepository bikeRepository)
         {
@@ -18,7 +18,7 @@ namespace BikeShop.BL.Services
             _bikeRepository.AddBike(bike);
         }
 
-        public void DeleteBikeById(int id)
+        public void DeleteBikeById(string id)
         {
             _bikeRepository.DeleteBikeById(id);
         }
@@ -28,12 +28,12 @@ namespace BikeShop.BL.Services
             return _bikeRepository.GetAllBikes();
         }
 
-        public Bike? GetBikeById(int id)
+        public Bike? GetBikeById(string id)
         {
             return _bikeRepository.GetBikeById(id);
         }
 
-        public void UpdateBikeById(int id, Bike bike)
+        public void UpdateBikeById(string id, Bike bike)
         {
             _bikeRepository.UpdateBikeById(id, bike);
         }

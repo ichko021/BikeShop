@@ -1,4 +1,6 @@
-﻿namespace BikeShop
+﻿using BikeShop.BL;
+
+namespace BikeShop
 {
     public static class DependencyInjection
     {

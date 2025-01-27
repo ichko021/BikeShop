@@ -5,9 +5,9 @@ namespace BikeShop.BL.Interfaces
     public interface IBikeService
     {
         List<Bike> GetAllBikes();
-        Bike? GetBikeById(int id);
-        void DeleteBikeById(int id);
+        Bike? GetBikeById(string id);
+        void DeleteBikeById(string id);
         void AddBike(Bike bike);
-        void UpdateBikeById(int id, Bike bike);
+        void UpdateBikeById(string id, Bike bike);
     }
 }
