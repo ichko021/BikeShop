@@ -9,7 +9,8 @@ namespace BikeShop.BL
     {
         public static IServiceCollection RegisterBusinessLayer(this IServiceCollection services)
         {
-            services.AddSingleton<IBikeService, BikeService>();
+            services.AddSingleton<IBikeService, BikeService>()
+                    .AddSingleton<IPartService, PartService>();
 
             return services;
         }

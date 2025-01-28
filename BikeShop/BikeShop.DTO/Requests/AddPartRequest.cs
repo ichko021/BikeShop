@@ -1,0 +1,14 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace BikeShop.DTO.Requests
+{
+    public class AddPartRequest
+    {
+        public string partName { get; set; }
+        public string partSpec { get; set; }
+    }
+}

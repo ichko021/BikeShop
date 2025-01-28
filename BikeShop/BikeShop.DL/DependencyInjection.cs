@@ -9,7 +9,8 @@ namespace BikeShop.DL
         public static IServiceCollection RegisterRepositories(this IServiceCollection services)
         {
             return services
-                .AddSingleton<IBikeRepository, BikeRepository>();
+                .AddSingleton<IBikeRepository, BikeRepository>()
+                .AddSingleton<IPartRepository, PartRepository>();
         }
     }
 }

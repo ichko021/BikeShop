@@ -1,4 +1,4 @@
-﻿using BikeShop.DTO;
+﻿using BikeShop.DTO.DTO;
 
 namespace BikeShop.DL.Interfaces
 {

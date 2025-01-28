@@ -8,95 +8,95 @@ namespace BikeShop.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class BikeShopController : ControllerBase
+    public class PartController : ControllerBase
     {
-        private readonly IBikeService _bikeService;
+        private readonly IPartService _partService;
         private readonly IMapper _mapper;
-        private readonly ILogger<BikeShopController> _logger;
+        private readonly ILogger<PartController> _logger;
 
-        public BikeShopController(IBikeService bikeService, IMapper mapper, ILogger<BikeShopController> logger)
+        public PartController(IPartService partService, IMapper mapper, ILogger<PartController> logger)
         {
-            _bikeService = bikeService;
+            _partService = partService;
             _mapper = mapper;
             _logger = logger;
         }
 
-        [HttpGet("getAllBikes")]
+        [HttpGet("getAllParts")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public List<Bike> GetAllBikes()
+        public List<Part> GetAllParts()
         {
-            return _bikeService.GetAllBikes();
+            return _partService.GetAllParts();
         }
 
-        [HttpGet("getBikeById")]
+        [HttpGet("getPartById")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public Bike? GetBikeById([FromQuery] string id)
+        public Part? GetPartById([FromQuery] string id)
         {
-            return _bikeService.GetBikeById(id);
+            return _partService.GetPartById(id);
         }
 
-        [HttpPost("addNewBike")]
+        [HttpPost("addNewPart")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public IActionResult AddBike([FromBody] AddBikeRequest bike)
+        public IActionResult AddPart([FromBody] AddPartRequest part)
         {
             try
             {
-                var bikeDto = _mapper.Map<Bike>(bike);
+                var partDto = _mapper.Map<Part>(part);
 
-                _bikeService.AddBike(bikeDto);
+                _partService.AddPart(partDto);
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Error adding bike {ex.Message} | {ex.StackTrace}");
+                _logger.LogError($"Error adding part. {ex.Message} | {ex.StackTrace}");
             }
 
             return Ok();
         }
 
-        [HttpPut("updateBike")]
+        [HttpPut("updatePart")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public IActionResult UpdateBikeById([FromQuery] string id, [FromBody] AddBikeRequest bike)
+        public IActionResult UpdatePartById([FromQuery] string id, [FromBody] AddPartRequest part)
         {
             try
             {
-                var bikeDto = _mapper.Map<Bike>(bike);
+                var partDto = _mapper.Map<Part>(part);
 
-                _bikeService.UpdateBikeById(id, bikeDto);
+                _partService.UpdatePartById(id, partDto);
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Error updating bike {ex.Message} | {ex.StackTrace}");
+                _logger.LogError($"Error updating part {ex.Message} | {ex.StackTrace}");
             }
 
             return Ok();
         }
 
-        [HttpDelete("deleteBike")]
+        [HttpDelete("deletePart")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public IActionResult DeleteBikeById([FromQuery] string id)
+        public IActionResult DeletePartById([FromQuery] string id)
         {
             try
-            { 
-                _bikeService.DeleteBikeById(id);
+            {
+                _partService.DeletePartById(id);
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Error deleting bike {ex.Message} | {ex.StackTrace}");
+                _logger.LogError($"Error deleting part {ex.Message} | {ex.StackTrace}");
             }
 
             return Ok();

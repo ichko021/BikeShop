@@ -1,6 +1,6 @@
 ﻿using BikeShop.BL.Interfaces;
 using BikeShop.DL.Interfaces;
-using BikeShop.DTO;
+using BikeShop.DTO.DTO;
 
 namespace BikeShop.BL.Services
 {

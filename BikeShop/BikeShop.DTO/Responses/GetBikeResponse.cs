@@ -1,17 +1,17 @@
-﻿using MongoDB.Bson;
-using MongoDB.Bson.Serialization.Attributes;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-namespace BikeShop.DTO
+namespace BikeShop.DTO.Responses
 {
-    public class Bike
+    public class GetBikeResponse
     {
-        [BsonId]
-        [BsonRepresentation(BsonType.ObjectId)]
         public string id { get; set; }
         public string brand { get; set; }
         public string model { get; set; }
         public double price { get; set; }
         public int availabilityInStore { get; set; }
-        public Parts bikeParts { get; set; }
     }
 }

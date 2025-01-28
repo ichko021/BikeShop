@@ -1,6 +1,6 @@
 ﻿using BikeShop.DL.Interfaces;
-using BikeShop.DTO;
 using BikeShop.DTO.Configurations;
+using BikeShop.DTO.DTO;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using MongoDB.Driver;
@@ -38,9 +38,7 @@ namespace BikeShop.DL.Repositories
             }
 
             try
-            {
-                bike.id = Guid.NewGuid().ToString();
-
+            { 
                 _bikes.InsertOne(bike);
             }
             catch (Exception ex)
@@ -55,6 +53,7 @@ namespace BikeShop.DL.Repositories
             if (string.IsNullOrEmpty(id))
             {
                 _logger.LogError("BikeId is null or empty.");
+                return;
             }
 
             var filter = Builders<Bike>.Filter
@@ -69,13 +68,6 @@ namespace BikeShop.DL.Repositories
                 _logger.LogError(ex,
                   $"Cannot delete bike {ex.Message} | {ex.StackTrace}");
             }
-            //foreach (Bike b in InMemoryDB.listOfBikes)
-            //{
-            //    if(b.id == id)
-            //    {
-            //        InMemoryDB.listOfBikes.Remove(b);
-            //    }
-            //}
         }
 
         public List<Bike> GetAllBikes()
@@ -88,21 +80,13 @@ namespace BikeShop.DL.Repositories
             if (string.IsNullOrEmpty(id))
             {
                 _logger.LogError("BikeId is null or empty.");
+                return null;
             }
 
             var query = _bikes.AsQueryable()
                         .Where(b => b.id == id).FirstOrDefault();
 
             return query;
-            //foreach (Bike b in InMemoryDB.listOfBikes)
-            //{
-            //    if (b.id == id)
-            //    {
-            //        return InMemoryDB.listOfBikes[b.id];
-            //    }
-            //}
-
-            //return null;
         }
 
         public void UpdateBikeById(string id, Bike bike)
@@ -110,6 +94,7 @@ namespace BikeShop.DL.Repositories
             if (string.IsNullOrEmpty(id))
             {
                 _logger.LogError("BikeId is null or empty.");
+                return;
             }
 
             var filter = Builders<Bike>.Filter
@@ -130,15 +115,6 @@ namespace BikeShop.DL.Repositories
                 _logger.LogError(ex,
                    $"Cannot update bike {ex.Message} | {ex.StackTrace}");
             }
-            
-
-            //foreach (Bike b in InMemoryDB.listOfBikes)
-            //{
-            //    if (b.id == id)
-            //    {
-            //        InMemoryDB.listOfBikes[id] = bike;
-            //    }
-            //}
         }
     }
 }
