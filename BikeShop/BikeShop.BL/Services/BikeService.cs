@@ -1,10 +1,13 @@
 ﻿using BikeShop.BL.Interfaces;
 using BikeShop.DL.Interfaces;
+using BikeShop.DL.Repositories;
 using BikeShop.DTO.DTO;
+using Microsoft.Extensions.Logging;
+using Serilog.Core;
 
 namespace BikeShop.BL.Services
 {
-    internal class BikeService : IBikeService
+    public class BikeService : IBikeService
     {
         private readonly IBikeRepository _bikeRepository;
 
@@ -13,9 +16,16 @@ namespace BikeShop.BL.Services
             _bikeRepository = bikeRepository;
         }
 
-        public void AddBike(Bike bike)
+        public Bike? AddBike(Bike bike)
         {
-            _bikeRepository.AddBike(bike);
+            try
+            {
+                return _bikeRepository.AddBike(bike);
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
         }
 
         public void DeleteBikeById(string id)
@@ -23,7 +33,7 @@ namespace BikeShop.BL.Services
             _bikeRepository.DeleteBikeById(id);
         }
 
-        public List<Bike> GetAllBikes()
+        public List<Bike>? GetAllBikes()
         {
             return _bikeRepository.GetAllBikes();
         }
@@ -33,9 +43,21 @@ namespace BikeShop.BL.Services
             return _bikeRepository.GetBikeById(id);
         }
 
-        public void UpdateBikeById(string id, Bike bike)
+        public Bike? UpdateBikeById(string id, Bike bike)
         {
-            _bikeRepository.UpdateBikeById(id, bike);
+            var bikeFetchedById = _bikeRepository.GetBikeById(id);
+
+            if(bikeFetchedById == null)
+            {
+                return null;
+            }
+
+            bikeFetchedById.brand = bike.brand;
+            bikeFetchedById.model = bike.model;
+            bikeFetchedById.price = bike.price;
+            bikeFetchedById.availabilityInStore = bike.availabilityInStore;
+
+            return _bikeRepository.UpdateBikeById(id, bikeFetchedById);
         }
     }
 }

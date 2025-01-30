@@ -29,14 +29,8 @@ namespace BikeShop.DL.Repositories
 
 
         }
-        public void AddPart(Part part)
+        public Part AddPart(Part part)
         {
-            if (part == null)
-            {
-                _logger.LogError("Part object is null");
-                return;
-            }
-
             try
             {
                 _parts.InsertOne(part);
@@ -44,20 +38,17 @@ namespace BikeShop.DL.Repositories
             catch (Exception ex)
             {
                 _logger.LogError(ex,
-                   $"Cannot add new part {ex.Message} | {ex.StackTrace}");
+                   $"Cannot add new bike {ex.Message} | {ex.StackTrace}");
+                throw;
             }
+
+            return part;
         }
 
         public void DeletePartById(string id)
         {
-            if (string.IsNullOrEmpty(id))
-            {
-                _logger.LogError("PartId is null or empty.");
-                return;
-            }
-
             var filter = Builders<Part>.Filter
-                    .Eq(b => b.id, id);
+                    .Eq(p => p.id, id);
 
             try
             {
@@ -77,41 +68,58 @@ namespace BikeShop.DL.Repositories
 
         public Part? GetPartById(string id)
         {
-            if (string.IsNullOrEmpty(id))
-            {
-                _logger.LogError("PartId is null or empty.");
-                return null;
-            }
-
-            var query = _parts.AsQueryable()
-                        .Where(p => p.id == id).FirstOrDefault();
-
-            return query;
-        }
-
-        public void UpdatePartById(string id, Part part)
-        {
-            if (string.IsNullOrEmpty(id))
-            {
-                _logger.LogError("PartId is null or empty.");
-                return;
-            }
-
-            var filter = Builders<Part>.Filter
-                .Eq(b => b.id, id);
-
-            var update = Builders<Part>.Update
-                .Set(p => p.partName, part.partName)
-                .Set(p => p.partSpec, part.partSpec);
-
             try
             {
-                _parts.UpdateOne(filter, update);
+                return _parts.AsQueryable()
+                        .Where(p => p.id == id).FirstOrDefault();
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex,
-                   $"Cannot update part. {ex.Message} | {ex.StackTrace}");
+                 $"Cannot fetch bike by id. {ex.Message} | {ex.StackTrace}");
+                throw;
+            }
+        }
+
+        public Part? UpdatePartById(string id, Part part)
+        {
+            //if (string.IsNullOrEmpty(id))
+            //{
+            //    _logger.LogError("PartId is null or empty.");
+            //    return;
+            //}
+
+            //var filter = Builders<Part>.Filter
+            //    .Eq(b => b.id, id);
+
+            //var update = Builders<Part>.Update
+            //    .Set(p => p.partName, part.partName)
+            //    .Set(p => p.partSpec, part.partSpec);
+
+            //try
+            //{
+            //    _parts.UpdateOne(filter, update);
+            //}
+            //catch (Exception ex)
+            //{
+            //    _logger.LogError(ex,
+            //       $"Cannot update part. {ex.Message} | {ex.StackTrace}");
+            //}
+
+            var filter = Builders<Part>.Filter
+                .Eq(b => b.id, id);
+
+            try
+            {
+                _parts.ReplaceOne(filter, part);
+
+                return part;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex,
+                   $"Cannot update bike {ex.Message} | {ex.StackTrace}");
+                throw;
             }
         }
     }

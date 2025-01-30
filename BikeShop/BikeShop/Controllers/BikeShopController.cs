@@ -26,9 +26,16 @@ namespace BikeShop.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public List<Bike> GetAllBikes()
+        public IActionResult GetAllBikes()
         {
-            return _bikeService.GetAllBikes();
+            var result = _bikeService.GetAllBikes();
+
+            if (result == null)
+            {
+                return Ok();
+            }
+
+            return Ok(result);
         }
 
         [HttpGet("getBikeById")]
@@ -36,30 +43,39 @@ namespace BikeShop.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public Bike? GetBikeById([FromQuery] string id)
+        public IActionResult GetBikeById([FromQuery] string id)
         {
-            return _bikeService.GetBikeById(id);
+            if(string.IsNullOrEmpty(id)) 
+            {
+                return BadRequest(new { message = "Id can't be null or empty."});
+            }
+
+            var result = _bikeService.GetBikeById(id);
+
+            if(result == null)
+            {
+                return NotFound();
+            }
+            return Ok(result);
         }
 
-        [HttpPost("addNewBike")]
+        [HttpPost("addBike")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public IActionResult AddBike([FromBody] AddBikeRequest bike)
         {
-            try
-            {
-                var bikeDto = _mapper.Map<Bike>(bike);
+            var bikeDto = _mapper.Map<Bike>(bike);
 
-                _bikeService.AddBike(bikeDto);
-            }
-            catch (Exception ex)
+            var result = _bikeService.AddBike(bikeDto);
+
+            if(result == null)
             {
-                _logger.LogError($"Error adding bike {ex.Message} | {ex.StackTrace}");
+                return BadRequest(result);
             }
 
-            return Ok();
+            return Ok(result);
         }
 
         [HttpPut("updateBike")]
@@ -69,18 +85,21 @@ namespace BikeShop.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public IActionResult UpdateBikeById([FromQuery] string id, [FromBody] AddBikeRequest bike)
         {
-            try
+            if (string.IsNullOrEmpty(id))
             {
-                var bikeDto = _mapper.Map<Bike>(bike);
-
-                _bikeService.UpdateBikeById(id, bikeDto);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"Error updating bike {ex.Message} | {ex.StackTrace}");
+                return BadRequest(new { message = "Id can't be null or empty." });
             }
 
-            return Ok();
+            var bikeDto = _mapper.Map<Bike>(bike);
+
+            var result = _bikeService.UpdateBikeById(id, bikeDto);
+
+            if (result == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(result);
         }
 
         [HttpDelete("deleteBike")]
@@ -90,14 +109,12 @@ namespace BikeShop.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public IActionResult DeleteBikeById([FromQuery] string id)
         {
-            try
-            { 
-                _bikeService.DeleteBikeById(id);
-            }
-            catch (Exception ex)
+            if (string.IsNullOrEmpty(id))
             {
-                _logger.LogError($"Error deleting bike {ex.Message} | {ex.StackTrace}");
+                return BadRequest(new { message = "Id can't be null or empty." });
             }
+
+            _bikeService.DeleteBikeById(id);
 
             return Ok();
         }

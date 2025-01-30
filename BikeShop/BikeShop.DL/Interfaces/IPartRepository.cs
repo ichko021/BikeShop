@@ -7,7 +7,7 @@ namespace BikeShop.DL.Interfaces
         List<Part> GetAllParts();
         Part? GetPartById(string id);
         void DeletePartById(string id);
-        void AddPart(Part part);
-        void UpdatePartById(string id, Part part);
+        Part? AddPart(Part part);
+        Part? UpdatePartById(string id, Part part);
     }
 }

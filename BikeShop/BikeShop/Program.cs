@@ -23,6 +23,10 @@ namespace BikeShop
             builder.Services.AddValidatorsFromAssemblyContaining<AddBikeRequestValidator>();
             builder.Services.AddValidatorsFromAssemblyContaining<AddPartRequestValidator>();
             builder.Services.AddFluentValidationAutoValidation();
+            //builder.Services.AddHealthChecks()
+            //    .AddCheck<Healthcheck>("Sample");
+            builder.Services.AddHealthChecks();
+
 
             var app = builder.Build();
 
@@ -37,6 +41,10 @@ namespace BikeShop
             app.UseSwaggerUI();
 
             app.MapControllers();
+
+            app.UseMiddleware<ExceptionHandlingMiddleware>();
+
+            app.MapHealthChecks("/healthz");
 
             app.Run();
         }

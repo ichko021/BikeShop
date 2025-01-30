@@ -7,7 +7,7 @@ namespace BikeShop.DL.Interfaces
         List<Bike> GetAllBikes();
         Bike? GetBikeById(string id);
         void DeleteBikeById(string id);
-        void AddBike(Bike bike);
-        void UpdateBikeById(string id, Bike bike);
+        Bike? AddBike(Bike bike);
+        Bike? UpdateBikeById(string id, Bike bike);
     }
 }

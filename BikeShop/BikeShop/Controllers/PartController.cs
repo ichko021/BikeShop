@@ -1,4 +1,5 @@
 using BikeShop.BL.Interfaces;
+using BikeShop.BL.Services;
 using BikeShop.DTO.DTO;
 using BikeShop.DTO.Requests;
 using MapsterMapper;
@@ -26,9 +27,16 @@ namespace BikeShop.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public List<Part> GetAllParts()
+        public IActionResult GetAllParts()
         {
-            return _partService.GetAllParts();
+            var result = _partService.GetAllParts();
+
+            if (result == null)
+            {
+                return Ok();
+            }
+
+            return Ok(result);
         }
 
         [HttpGet("getPartById")]
@@ -36,9 +44,20 @@ namespace BikeShop.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public Part? GetPartById([FromQuery] string id)
+        public IActionResult GetPartById([FromQuery] string id)
         {
-            return _partService.GetPartById(id);
+            if(string.IsNullOrEmpty(id))
+            {
+                return BadRequest(new { message = "Id can't be null or empty." });
+            }
+
+            var result = _partService.GetPartById(id);
+
+            if (result == null)
+            {
+                return NotFound();
+            }
+            return Ok(result);
         }
 
         [HttpPost("addNewPart")]
@@ -48,18 +67,16 @@ namespace BikeShop.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public IActionResult AddPart([FromBody] AddPartRequest part)
         {
-            try
-            {
-                var partDto = _mapper.Map<Part>(part);
+            var partDto = _mapper.Map<Part>(part);
 
-                _partService.AddPart(partDto);
-            }
-            catch (Exception ex)
+            var result = _partService.AddPart(partDto);
+
+            if (result == null)
             {
-                _logger.LogError($"Error adding part. {ex.Message} | {ex.StackTrace}");
+                return BadRequest(result);
             }
 
-            return Ok();
+            return Ok(result);
         }
 
         [HttpPut("updatePart")]
@@ -69,18 +86,21 @@ namespace BikeShop.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public IActionResult UpdatePartById([FromQuery] string id, [FromBody] AddPartRequest part)
         {
-            try
+            if (string.IsNullOrEmpty(id))
             {
-                var partDto = _mapper.Map<Part>(part);
-
-                _partService.UpdatePartById(id, partDto);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"Error updating part {ex.Message} | {ex.StackTrace}");
+                return BadRequest(new { message = "Id can't be null or empty." });
             }
 
-            return Ok();
+            var partDto = _mapper.Map<Part>(part);
+
+            var result = _partService.UpdatePartById(id, partDto);
+
+            if (result == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(result);
         }
 
         [HttpDelete("deletePart")]
@@ -90,14 +110,12 @@ namespace BikeShop.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public IActionResult DeletePartById([FromQuery] string id)
         {
-            try
+            if (string.IsNullOrEmpty(id))
             {
-                _partService.DeletePartById(id);
+                return BadRequest(new { message = "Id can't be null or empty." });
             }
-            catch (Exception ex)
-            {
-                _logger.LogError($"Error deleting part {ex.Message} | {ex.StackTrace}");
-            }
+
+            _partService.DeletePartById(id);
 
             return Ok();
         }

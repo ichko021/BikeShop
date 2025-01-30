@@ -11,13 +11,17 @@ namespace BikeShop.Validators
                 .NotEmpty()
                 .WithMessage("Part name is required.")
                 .Length(2, 50)
-                .WithMessage("Part name must be between 2 and 50 characters.");
+                .WithMessage("Part name must be between 2 and 50 characters.")
+                .Matches(@"^[0-9a-zA-Z ]+$")
+                .WithMessage("Numbers and letters only please.");
 
             RuleFor(part => part.partSpec)
                 .NotEmpty()
                 .WithMessage("Part specification is required.")
                 .Length(1, 100)
-                .WithMessage("Part specification must be between 1 and 100 characters.");
+                .WithMessage("Part specification must be between 1 and 100 characters.")
+                .Matches(@"^[0-9a-zA-Z ]+$")
+                .WithMessage("Numbers and letters only please.");
         }
     }
 }

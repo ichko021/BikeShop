@@ -29,33 +29,24 @@ namespace BikeShop.DL.Repositories
 
 
         }
-        public void AddBike(Bike bike)
+        public Bike? AddBike(Bike bike)
         {
-            if (bike == null)
-            {
-                _logger.LogError("Bike object is null");
-                return;
-            }
-
             try
-            { 
-                _bikes.InsertOne(bike);
+            {
+                _bikes.InsertOne(bike);          
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex,
                    $"Cannot add new bike {ex.Message} | {ex.StackTrace}");
+                throw;
             }
+
+            return bike;
         }
 
         public void DeleteBikeById(string id)
         {
-            if (string.IsNullOrEmpty(id))
-            {
-                _logger.LogError("BikeId is null or empty.");
-                return;
-            }
-
             var filter = Builders<Bike>.Filter
                     .Eq(b => b.id, id);
 
@@ -67,6 +58,7 @@ namespace BikeShop.DL.Repositories
             {
                 _logger.LogError(ex,
                   $"Cannot delete bike {ex.Message} | {ex.StackTrace}");
+                throw;
             }
         }
 
@@ -77,43 +69,35 @@ namespace BikeShop.DL.Repositories
 
         public Bike? GetBikeById(string id)
         {
-            if (string.IsNullOrEmpty(id))
+            try
             {
-                _logger.LogError("BikeId is null or empty.");
-                return null;
-            }
-
-            var query = _bikes.AsQueryable()
+                return _bikes.AsQueryable()
                         .Where(b => b.id == id).FirstOrDefault();
-
-            return query;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex,
+                 $"Cannot fetch bike by id. {ex.Message} | {ex.StackTrace}");
+                throw;
+            }
         }
 
-        public void UpdateBikeById(string id, Bike bike)
-        {
-            if (string.IsNullOrEmpty(id))
-            {
-                _logger.LogError("BikeId is null or empty.");
-                return;
-            }
-
+        public Bike? UpdateBikeById(string id, Bike bike)
+        { 
             var filter = Builders<Bike>.Filter
                 .Eq(b => b.id, id);
 
-            var update = Builders<Bike>.Update
-                .Set(b => b.brand, bike.brand)
-                .Set(b => b.model, bike.model)
-                .Set(b => b.price, bike.price)
-                .Set(b => b.availabilityInStore, bike.availabilityInStore);
-
             try
             {
-                _bikes.UpdateOne(filter, update);
+                _bikes.ReplaceOne(filter, bike);
+
+                return bike;
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex,
                    $"Cannot update bike {ex.Message} | {ex.StackTrace}");
+                throw;
             }
         }
     }

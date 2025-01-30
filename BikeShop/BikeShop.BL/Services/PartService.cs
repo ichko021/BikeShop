@@ -4,7 +4,7 @@ using BikeShop.DTO.DTO;
 
 namespace BikeShop.BL.Services
 {
-    internal class PartService : IPartService
+    public class PartService : IPartService
     {
         private readonly IPartRepository _partRepository;
 
@@ -13,9 +13,16 @@ namespace BikeShop.BL.Services
             _partRepository = partRepository;
         }
 
-        public void AddPart(Part part)
+        public Part? AddPart(Part part)
         {
-            _partRepository.AddPart(part);
+            try
+            {
+                return _partRepository.AddPart(part);
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
         }
 
         public void DeletePartById(string id)
@@ -33,9 +40,20 @@ namespace BikeShop.BL.Services
             return _partRepository.GetPartById(id);
         }
 
-        public void UpdatePartById(string id, Part part)
+        public Part? UpdatePartById(string id, Part part)
         {
-            _partRepository.UpdatePartById(id, part);
+            var partFetchedById = _partRepository.GetPartById(id);
+
+            if (partFetchedById == null)
+            {
+                return null;
+            }
+
+            partFetchedById.partName = part.partName;
+            partFetchedById.partSpec = part.partSpec;
+
+            return _partRepository.UpdatePartById(id, partFetchedById);
         }
+        
     }
 }
