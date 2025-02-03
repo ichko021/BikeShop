@@ -1,6 +1,7 @@
 ﻿using BikeShop.BL.Services;
 using BikeShop.DL.Interfaces;
 using BikeShop.DTO.DTO;
+using Microsoft.Extensions.Logging;
 using Moq;
 
 namespace BikeShop.Tests.BikeServiceTests
@@ -8,10 +9,12 @@ namespace BikeShop.Tests.BikeServiceTests
     public class BikeServiceTests_DeleteBikeById
     {
         private readonly Mock<IBikeRepository> _partRepositoryMock;
+        private readonly Mock<ILogger<BikeService>> _logger;
 
         public BikeServiceTests_DeleteBikeById()
         {
             _partRepositoryMock = new Mock<IBikeRepository>();
+            _logger = new Mock<ILogger<BikeService>>();
         }
 
         [Fact]
@@ -32,7 +35,7 @@ namespace BikeShop.Tests.BikeServiceTests
             _partRepositoryMock
                 .Setup(b => b.GetBikeById(testObject.id));
 
-            var bikeService = new BikeService(_partRepositoryMock.Object);
+            var bikeService = new BikeService(_partRepositoryMock.Object, _logger.Object);
 
             bikeService.DeleteBikeById(testObject.id);
 
@@ -59,7 +62,7 @@ namespace BikeShop.Tests.BikeServiceTests
             _partRepositoryMock
                 .Setup(b => b.GetBikeById("1234"));
 
-            var bikeService = new BikeService(_partRepositoryMock.Object);
+            var bikeService = new BikeService(_partRepositoryMock.Object, _logger.Object);
 
             bikeService.DeleteBikeById(testObject.id);
 

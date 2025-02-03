@@ -10,10 +10,12 @@ namespace BikeShop.BL.Services
     public class BikeService : IBikeService
     {
         private readonly IBikeRepository _bikeRepository;
+        private readonly ILogger<BikeService> _logger;
 
-        public BikeService(IBikeRepository bikeRepository)
+        public BikeService(IBikeRepository bikeRepository, ILogger<BikeService> logger)
         {
             _bikeRepository = bikeRepository;
+            _logger = logger;
         }
 
         public Bike? AddBike(Bike bike)
@@ -24,28 +26,55 @@ namespace BikeShop.BL.Services
             }
             catch (Exception ex)
             {
+                _logger.LogError($"Cannot add bike. {ex.Message} | {ex.StackTrace}");
                 throw;
             }
         }
 
         public void DeleteBikeById(string id)
         {
-            _bikeRepository.DeleteBikeById(id);
+            
+            try
+            {
+                _bikeRepository.DeleteBikeById(id);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Cannot delete bike. {ex.Message} | {ex.StackTrace}");
+                throw;
+            }
         }
 
         public List<Bike>? GetAllBikes()
         {
-            return _bikeRepository.GetAllBikes();
+            try
+            {
+                return _bikeRepository.GetAllBikes();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Cannot fetch bikes. {ex.Message} | {ex.StackTrace}");
+                throw;
+            }
         }
 
         public Bike? GetBikeById(string id)
         {
-            return _bikeRepository.GetBikeById(id);
+            try
+            {
+                return _bikeRepository.GetBikeById(id);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Cannot fetch bike by id. {ex.Message} | {ex.StackTrace}");
+                throw;
+            }
         }
 
         public Bike? UpdateBikeById(string id, Bike bike)
         {
-            var bikeFetchedById = _bikeRepository.GetBikeById(id);
+
+            var bikeFetchedById = GetBikeById(id);
 
             if(bikeFetchedById == null)
             {
@@ -57,7 +86,15 @@ namespace BikeShop.BL.Services
             bikeFetchedById.price = bike.price;
             bikeFetchedById.availabilityInStore = bike.availabilityInStore;
 
-            return _bikeRepository.UpdateBikeById(id, bikeFetchedById);
+            try
+            {
+                return _bikeRepository.UpdateBikeById(id, bikeFetchedById);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Cannot update bike. {ex.Message} | {ex.StackTrace}");
+                throw;
+            }
         }
     }
 }

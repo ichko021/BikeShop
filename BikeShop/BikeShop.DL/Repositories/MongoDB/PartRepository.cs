@@ -31,16 +31,7 @@ namespace BikeShop.DL.Repositories
         }
         public Part AddPart(Part part)
         {
-            try
-            {
-                _parts.InsertOne(part);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex,
-                   $"Cannot add new bike {ex.Message} | {ex.StackTrace}");
-                throw;
-            }
+            _parts.InsertOne(part);
 
             return part;
         }
@@ -50,15 +41,7 @@ namespace BikeShop.DL.Repositories
             var filter = Builders<Part>.Filter
                     .Eq(p => p.id, id);
 
-            try
-            {
-                _parts.DeleteOne(filter);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex,
-                  $"Cannot delete part {ex.Message} | {ex.StackTrace}");
-            }
+            _parts.DeleteOne(filter);
         }
 
         public List<Part> GetAllParts()
@@ -68,59 +51,18 @@ namespace BikeShop.DL.Repositories
 
         public Part? GetPartById(string id)
         {
-            try
-            {
-                return _parts.AsQueryable()
+            return _parts.AsQueryable()
                         .Where(p => p.id == id).FirstOrDefault();
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex,
-                 $"Cannot fetch bike by id. {ex.Message} | {ex.StackTrace}");
-                throw;
-            }
         }
 
         public Part? UpdatePartById(string id, Part part)
         {
-            //if (string.IsNullOrEmpty(id))
-            //{
-            //    _logger.LogError("PartId is null or empty.");
-            //    return;
-            //}
-
-            //var filter = Builders<Part>.Filter
-            //    .Eq(b => b.id, id);
-
-            //var update = Builders<Part>.Update
-            //    .Set(p => p.partName, part.partName)
-            //    .Set(p => p.partSpec, part.partSpec);
-
-            //try
-            //{
-            //    _parts.UpdateOne(filter, update);
-            //}
-            //catch (Exception ex)
-            //{
-            //    _logger.LogError(ex,
-            //       $"Cannot update part. {ex.Message} | {ex.StackTrace}");
-            //}
-
             var filter = Builders<Part>.Filter
                 .Eq(b => b.id, id);
 
-            try
-            {
-                _parts.ReplaceOne(filter, part);
+            _parts.ReplaceOne(filter, part);
 
-                return part;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex,
-                   $"Cannot update bike {ex.Message} | {ex.StackTrace}");
-                throw;
-            }
+            return part;
         }
     }
 }

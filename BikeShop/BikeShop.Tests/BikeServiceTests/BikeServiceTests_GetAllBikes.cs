@@ -1,6 +1,7 @@
 using BikeShop.BL.Services;
 using BikeShop.DL.Interfaces;
 using BikeShop.DTO.DTO;
+using Microsoft.Extensions.Logging;
 using Moq;
 
 namespace BikeShop.Tests.BikeServiceTests
@@ -8,6 +9,7 @@ namespace BikeShop.Tests.BikeServiceTests
     public class BikeServiceTests_GetAllBike
     {
         private readonly Mock<IBikeRepository> _bikeServiceMock;
+        private readonly Mock<ILogger<BikeService>> _logger;
 
         private readonly List<Bike> _bikeList = new List<Bike>()
         {
@@ -40,6 +42,7 @@ namespace BikeShop.Tests.BikeServiceTests
         public BikeServiceTests_GetAllBike()
         {
             _bikeServiceMock = new Mock<IBikeRepository>();
+            _logger = new Mock<ILogger<BikeService>>(); 
         }
 
         [Fact]
@@ -54,7 +57,7 @@ namespace BikeShop.Tests.BikeServiceTests
                 .Setup(b => b.GetAllBikes())
                 .Returns(_bikeList);
 
-            var bikeService = new BikeService(_bikeServiceMock.Object);
+            var bikeService = new BikeService(_bikeServiceMock.Object, _logger.Object);
 
             var result = bikeService.GetAllBikes();
 
@@ -72,7 +75,7 @@ namespace BikeShop.Tests.BikeServiceTests
                 .Setup(b => b.GetAllBikes())
                 .Returns(new List<Bike>());
 
-            var bikeService = new BikeService(_bikeServiceMock.Object);
+            var bikeService = new BikeService(_bikeServiceMock.Object, _logger.Object);
 
             var result = bikeService.GetAllBikes();
 

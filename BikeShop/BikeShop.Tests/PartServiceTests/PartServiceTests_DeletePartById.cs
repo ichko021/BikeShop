@@ -1,6 +1,7 @@
 ﻿using BikeShop.BL.Services;
 using BikeShop.DL.Interfaces;
 using BikeShop.DTO.DTO;
+using Microsoft.Extensions.Logging;
 using Moq;
 
 namespace BikeShop.Tests.PartServiceTests
@@ -8,10 +9,12 @@ namespace BikeShop.Tests.PartServiceTests
     public class PartServiceTests_DeletePartById
     {
         private readonly Mock<IPartRepository> _partRepositoryMock;
+        private readonly Mock<ILogger<PartService>> _logger;
 
         public PartServiceTests_DeletePartById()
         {
             _partRepositoryMock = new Mock<IPartRepository>();
+            _logger = new Mock<ILogger<PartService>>();
         }
 
         [Fact]
@@ -30,7 +33,7 @@ namespace BikeShop.Tests.PartServiceTests
             _partRepositoryMock
                 .Setup(p => p.GetPartById(testObject.id));
 
-            var partService = new PartService(_partRepositoryMock.Object);
+            var partService = new PartService(_partRepositoryMock.Object, _logger.Object);
 
             partService.DeletePartById(testObject.id);
 
@@ -55,7 +58,7 @@ namespace BikeShop.Tests.PartServiceTests
             _partRepositoryMock
                 .Setup(p => p.GetPartById("1234"));
 
-            var partService = new PartService(_partRepositoryMock.Object);
+            var partService = new PartService(_partRepositoryMock.Object, _logger.Object);
 
             partService.DeletePartById(testObject.id);
 

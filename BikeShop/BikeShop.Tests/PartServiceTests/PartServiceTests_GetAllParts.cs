@@ -1,6 +1,7 @@
 using BikeShop.BL.Services;
 using BikeShop.DL.Interfaces;
 using BikeShop.DTO.DTO;
+using Microsoft.Extensions.Logging;
 using Moq;
 
 namespace BikeShop.Tests.PartServiceTests
@@ -8,6 +9,7 @@ namespace BikeShop.Tests.PartServiceTests
     public class PartServiceTests_GetAllParts
     {
         private readonly Mock<IPartRepository> _partRepositoryMock;
+        private readonly Mock<ILogger<PartService>> _logger;
 
         private readonly List<Part> _bikeList = new List<Part>()
         {
@@ -34,6 +36,7 @@ namespace BikeShop.Tests.PartServiceTests
         public PartServiceTests_GetAllParts()
         {
             _partRepositoryMock = new Mock<IPartRepository>();
+            _logger = new Mock<ILogger<PartService>>();
         }
 
         [Fact]
@@ -48,7 +51,7 @@ namespace BikeShop.Tests.PartServiceTests
                 .Setup(p => p.GetAllParts())
                 .Returns(_bikeList);
 
-            var partService = new PartService(_partRepositoryMock.Object);
+            var partService = new PartService(_partRepositoryMock.Object, _logger.Object);
 
             var result = partService.GetAllParts();
 
@@ -66,7 +69,7 @@ namespace BikeShop.Tests.PartServiceTests
                 .Setup(b => b.GetAllParts())
                 .Returns(new List<Part>());
 
-            var partService = new PartService(_partRepositoryMock.Object);
+            var partService = new PartService(_partRepositoryMock.Object, _logger.Object);
 
             var result = partService.GetAllParts();
 

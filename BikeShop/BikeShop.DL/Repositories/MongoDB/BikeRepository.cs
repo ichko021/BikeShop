@@ -31,16 +31,7 @@ namespace BikeShop.DL.Repositories
         }
         public Bike? AddBike(Bike bike)
         {
-            try
-            {
-                _bikes.InsertOne(bike);          
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex,
-                   $"Cannot add new bike {ex.Message} | {ex.StackTrace}");
-                throw;
-            }
+            _bikes.InsertOne(bike);
 
             return bike;
         }
@@ -50,16 +41,7 @@ namespace BikeShop.DL.Repositories
             var filter = Builders<Bike>.Filter
                     .Eq(b => b.id, id);
 
-            try
-            {
-                _bikes.DeleteOne(filter);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex,
-                  $"Cannot delete bike {ex.Message} | {ex.StackTrace}");
-                throw;
-            }
+            _bikes.DeleteOne(filter);
         }
 
         public List<Bike> GetAllBikes()
@@ -69,36 +51,18 @@ namespace BikeShop.DL.Repositories
 
         public Bike? GetBikeById(string id)
         {
-            try
-            {
-                return _bikes.AsQueryable()
+            return _bikes.AsQueryable()
                         .Where(b => b.id == id).FirstOrDefault();
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex,
-                 $"Cannot fetch bike by id. {ex.Message} | {ex.StackTrace}");
-                throw;
-            }
         }
 
         public Bike? UpdateBikeById(string id, Bike bike)
-        { 
+        {
             var filter = Builders<Bike>.Filter
                 .Eq(b => b.id, id);
 
-            try
-            {
-                _bikes.ReplaceOne(filter, bike);
+            _bikes.ReplaceOne(filter, bike);
 
-                return bike;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex,
-                   $"Cannot update bike {ex.Message} | {ex.StackTrace}");
-                throw;
-            }
+            return bike;
         }
     }
 }

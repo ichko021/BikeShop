@@ -1,6 +1,7 @@
 ﻿using BikeShop.BL.Services;
 using BikeShop.DL.Interfaces;
 using BikeShop.DTO.DTO;
+using Microsoft.Extensions.Logging;
 using Moq;
 
 namespace BikeShop.Tests.BikeServiceTests
@@ -8,10 +9,12 @@ namespace BikeShop.Tests.BikeServiceTests
     public class BikeServiceTests_AddBike
     {
         private readonly Mock<IBikeRepository> _bikeRepositoryMock;
+        private readonly Mock<ILogger<BikeService>> _logger;
 
         public BikeServiceTests_AddBike()
         {
             _bikeRepositoryMock = new Mock<IBikeRepository>();
+            _logger = new Mock<ILogger<BikeService>>();
         }
 
         [Fact]
@@ -32,7 +35,7 @@ namespace BikeShop.Tests.BikeServiceTests
                 .Callback<Bike>(b => b.id = testObject.id)
                 .Returns(testObject);
 
-            var bikeService = new BikeService(_bikeRepositoryMock.Object);
+            var bikeService = new BikeService(_bikeRepositoryMock.Object, _logger.Object);
 
             var response = bikeService.AddBike(testObject);
 
@@ -47,7 +50,7 @@ namespace BikeShop.Tests.BikeServiceTests
             _bikeRepositoryMock
                 .Setup(b => b.AddBike(It.IsAny<Bike>()));
 
-            var bikeService = new BikeService(_bikeRepositoryMock.Object);
+            var bikeService = new BikeService(_bikeRepositoryMock.Object, _logger.Object);
 
             var response = bikeService.AddBike(testObject);
 

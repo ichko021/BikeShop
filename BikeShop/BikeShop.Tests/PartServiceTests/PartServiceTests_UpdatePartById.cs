@@ -1,6 +1,7 @@
 ﻿using BikeShop.BL.Services;
 using BikeShop.DL.Interfaces;
 using BikeShop.DTO.DTO;
+using Microsoft.Extensions.Logging;
 using Moq;
 
 namespace BikeShop.Tests.PartServiceTests
@@ -9,10 +10,12 @@ namespace BikeShop.Tests.PartServiceTests
     {
 
         private readonly Mock<IPartRepository> _partRepositoryMock;
+        private readonly Mock<ILogger<PartService>> _logger;
 
         public PartServiceTests_UpdatePartById()
         {
             _partRepositoryMock = new Mock<IPartRepository>();
+            _logger = new Mock<ILogger<PartService>>();
         }
 
         [Fact]
@@ -40,7 +43,7 @@ namespace BikeShop.Tests.PartServiceTests
                 .Setup(b => b.UpdatePartById(testObject.id, It.IsAny<Part>()))
                 .Returns(testObject);
 
-            var partService = new PartService(_partRepositoryMock.Object);
+            var partService = new PartService(_partRepositoryMock.Object, _logger.Object);
 
             var response = partService.UpdatePartById(testObject.id, updatedTestObject);
 
@@ -69,7 +72,7 @@ namespace BikeShop.Tests.PartServiceTests
                 .Setup(b => b.UpdatePartById("1234", It.IsAny<Part>()))
                 .Returns(testObject);
 
-            var partService = new PartService(_partRepositoryMock.Object);
+            var partService = new PartService(_partRepositoryMock.Object, _logger.Object);
 
             var response = partService.UpdatePartById(testObject.id, updatedTestObject);
 
