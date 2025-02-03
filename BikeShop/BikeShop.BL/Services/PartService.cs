@@ -37,7 +37,7 @@ namespace BikeShop.BL.Services
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Cannot delete part. {ex.Message} | {ex.StackTrace}");
+                _logger.LogError(ex, $"Cannot delete part by id {id}. {ex.Message} | {ex.StackTrace}");
                 throw;
             }
 
@@ -64,7 +64,7 @@ namespace BikeShop.BL.Services
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Cannot fetch part by {id}. {ex.Message} | {ex.StackTrace}");
+                _logger.LogError(ex, $"Cannot fetch part by id {id}. {ex.Message} | {ex.StackTrace}");
                 throw;
             }
             
@@ -88,7 +88,7 @@ namespace BikeShop.BL.Services
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Cannot update part by {id}. {ex.Message} | {ex.StackTrace}");
+                _logger.LogError(ex, $"Cannot update part by id {id}. {ex.Message} | {ex.StackTrace}");
                 throw;
             }
         }

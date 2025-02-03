@@ -3,6 +3,7 @@ using BikeShop.DTO.DTO;
 using BikeShop.DTO.Requests;
 using MapsterMapper;
 using Microsoft.AspNetCore.Mvc;
+using System.Text.RegularExpressions;
 
 namespace BikeShop.Controllers
 {
@@ -28,14 +29,17 @@ namespace BikeShop.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public IActionResult GetAllBikes()
         {
-            var result = _bikeService.GetAllBikes();
-
-            if (result == null)
+            try
             {
-                return Ok();
-            }
+                var result = _bikeService.GetAllBikes();
 
-            return Ok(result);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Cannot fetch bikes. {ex.Message} | {ex.StackTrace}");
+                return BadRequest();
+            }
         }
 
         [HttpGet("getBikeById")]
@@ -45,18 +49,31 @@ namespace BikeShop.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public IActionResult GetBikeById([FromQuery] string id)
         {
-            if(string.IsNullOrEmpty(id)) 
+            if (string.IsNullOrEmpty(id))
             {
-                return BadRequest(new { message = "Id can't be null or empty."});
+                return BadRequest(new { message = "Id can't be null or empty." });
             }
-
-            var result = _bikeService.GetBikeById(id);
-
-            if(result == null)
+            else if (!Regex.IsMatch(id, "^[0-9a-f]{24}$"))
             {
-                return NotFound();
+                return BadRequest(new { message = "Id is not valid." });
             }
-            return Ok(result);
+            
+
+            try
+            {
+                var result = _bikeService.GetBikeById(id);
+
+                if (result == null)
+                {
+                    return NotFound();
+                }
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Cannot fetch bike by {id}. {ex.Message} | {ex.StackTrace}");
+                return BadRequest();
+            }
         }
 
         [HttpPost("addBike")]
@@ -68,14 +85,22 @@ namespace BikeShop.Controllers
         {
             var bikeDto = _mapper.Map<Bike>(bike);
 
-            var result = _bikeService.AddBike(bikeDto);
-
-            if(result == null)
+            try
             {
-                return BadRequest(result);
-            }
+                var result = _bikeService.AddBike(bikeDto);
 
-            return Ok(result);
+                if (result == null)
+                {
+                    return BadRequest(result);
+                }
+
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Cannot add bike. {ex.Message} | {ex.StackTrace}");
+                return BadRequest();
+            }
         }
 
         [HttpPut("updateBike")]
@@ -89,17 +114,24 @@ namespace BikeShop.Controllers
             {
                 return BadRequest(new { message = "Id can't be null or empty." });
             }
+            else if (!Regex.IsMatch(id, "^[0-9a-f]{24}$"))
+            {
+                return BadRequest(new { message = "Id is not valid." });
+            }
 
             var bikeDto = _mapper.Map<Bike>(bike);
 
-            var result = _bikeService.UpdateBikeById(id, bikeDto);
-
-            if (result == null)
+            try
             {
-                return NotFound();
-            }
+                var result = _bikeService.UpdateBikeById(id, bikeDto);
 
-            return Ok(result);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Cannot update bike by id {id}. {ex.Message} | {ex.StackTrace}");
+                return BadRequest();
+            }
         }
 
         [HttpDelete("deleteBike")]
@@ -113,10 +145,24 @@ namespace BikeShop.Controllers
             {
                 return BadRequest(new { message = "Id can't be null or empty." });
             }
+            else if (!Regex.IsMatch(id, "^[0-9a-f]{24}$"))
+            {
+                return BadRequest(new { message = "Id is not valid." });
+            }
 
-            _bikeService.DeleteBikeById(id);
 
-            return Ok();
+            try
+            {
+                _bikeService.DeleteBikeById(id);
+
+                return Ok();
+            } 
+            catch (Exception ex)
+            {
+                _logger.LogError($"Cannot delete bike by id {id}. {ex.Message} | {ex.StackTrace}");
+                return BadRequest();
+            }
+            
         }
     }
 }

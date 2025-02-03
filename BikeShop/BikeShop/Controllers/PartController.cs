@@ -4,6 +4,7 @@ using BikeShop.DTO.DTO;
 using BikeShop.DTO.Requests;
 using MapsterMapper;
 using Microsoft.AspNetCore.Mvc;
+using System.Text.RegularExpressions;
 
 namespace BikeShop.Controllers
 {
@@ -29,14 +30,24 @@ namespace BikeShop.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public IActionResult GetAllParts()
         {
-            var result = _partService.GetAllParts();
-
-            if (result == null)
+            try
             {
-                return Ok();
+                var result = _partService.GetAllParts();
+
+                if (result == null)
+                {
+                    return Ok();
+                }
+
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Cannot fetch parts. {ex.Message} | {ex.StackTrace}");
+                return BadRequest();
             }
 
-            return Ok(result);
+
         }
 
         [HttpGet("getPartById")]
@@ -48,16 +59,29 @@ namespace BikeShop.Controllers
         {
             if(string.IsNullOrEmpty(id))
             {
-                return BadRequest(new { message = "Id can't be null or empty." });
-            }
-
-            var result = _partService.GetPartById(id);
-
-            if (result == null)
+                return BadRequest(new { message = "Id cannot be null or empty." });
+            } 
+            else if(!Regex.IsMatch(id, "^[0-9a-f]{24}$"))
             {
-                return NotFound();
+                return BadRequest(new { message = "Id is not valid." });
             }
-            return Ok(result);
+
+            try
+            {
+                var result = _partService.GetPartById(id);
+
+                if (result == null)
+                {
+                    return NotFound();
+                }
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Cannot fetch part by id {id}. {ex.Message} | {ex.StackTrace}");
+                return BadRequest();
+            }
+
         }
 
         [HttpPost("addNewPart")]
@@ -69,14 +93,22 @@ namespace BikeShop.Controllers
         {
             var partDto = _mapper.Map<Part>(part);
 
-            var result = _partService.AddPart(partDto);
-
-            if (result == null)
+            try
             {
-                return BadRequest(result);
-            }
+                var result = _partService.AddPart(partDto);
 
-            return Ok(result);
+                if (result == null)
+                {
+                    return BadRequest(result);
+                }
+
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Cannot add part. {ex.Message} | {ex.StackTrace}");
+                return BadRequest();
+            }
         }
 
         [HttpPut("updatePart")]
@@ -90,17 +122,29 @@ namespace BikeShop.Controllers
             {
                 return BadRequest(new { message = "Id can't be null or empty." });
             }
+            else if (!Regex.IsMatch(id, "^[0-9a-f]{24}$"))
+            {
+                return BadRequest(new { message = "Id is not valid." });
+            }
 
             var partDto = _mapper.Map<Part>(part);
 
-            var result = _partService.UpdatePartById(id, partDto);
-
-            if (result == null)
+            try
             {
-                return NotFound();
-            }
+                var result = _partService.UpdatePartById(id, partDto);
 
-            return Ok(result);
+                if (result == null)
+                {
+                    return NotFound();
+                }
+
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Cannot update part by id {id}. {ex.Message} | {ex.StackTrace}");
+                return BadRequest();
+            }
         }
 
         [HttpDelete("deletePart")]
@@ -114,6 +158,11 @@ namespace BikeShop.Controllers
             {
                 return BadRequest(new { message = "Id can't be null or empty." });
             }
+            else if (!Regex.IsMatch(id, "^[0-9a-f]{24}$"))
+            {
+                return BadRequest(new { message = "Id is not valid." });
+            }
+
 
             _partService.DeletePartById(id);
 
