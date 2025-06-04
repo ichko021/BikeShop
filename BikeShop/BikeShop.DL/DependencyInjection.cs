@@ -1,5 +1,6 @@
 ﻿using BikeShop.DL.Interfaces;
 using BikeShop.DL.Repositories;
+using BikeShop.DL.Kafka;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace BikeShop.DL
@@ -10,7 +11,10 @@ namespace BikeShop.DL
         {
             return services
                 .AddSingleton<IBikeRepository, BikeRepository>()
-                .AddSingleton<IPartRepository, PartRepository>();
+                .AddSingleton<IPartRepository, PartRepository>()
+                .AddSingleton<KafkaProducer>()
+                .AddHostedService<KafkaConsumer>();
+
         }
     }
 }

@@ -26,42 +26,37 @@ namespace BikeShop.DL.Repositories
 
             _parts = database
                 .GetCollection<Part>($"{nameof(Part)}s");
-
-
         }
-        public Part AddPart(Part part)
-        {
-            _parts.InsertOne(part);
 
+        public async Task<Part> AddPart(Part part)
+        {
+            await _parts.InsertOneAsync(part);
             return part;
         }
 
-        public void DeletePartById(string id)
+        public async Task DeletePartById(string id)
         {
-            var filter = Builders<Part>.Filter
-                    .Eq(p => p.id, id);
-
-            _parts.DeleteOne(filter);
+            var filter = Builders<Part>.Filter.Eq(p => p.id, id);
+            await _parts.DeleteOneAsync(filter);
         }
 
-        public List<Part> GetAllParts()
+        public async Task<List<Part>> GetAllParts()
         {
-            return _parts.Find(part => true).ToList();
+            var result = await _parts.FindAsync(part => true);
+            return await result.ToListAsync();
         }
 
-        public Part? GetPartById(string id)
+        public async Task<Part?> GetPartById(string id)
         {
-            return _parts.AsQueryable()
-                        .Where(p => p.id == id).FirstOrDefault();
+            var filter = Builders<Part>.Filter.Eq(p => p.id, id);
+            var result = await _parts.FindAsync(filter);
+            return await result.FirstOrDefaultAsync();
         }
 
-        public Part? UpdatePartById(string id, Part part)
+        public async Task<Part?> UpdatePartById(string id, Part part)
         {
-            var filter = Builders<Part>.Filter
-                .Eq(b => b.id, id);
-
-            _parts.ReplaceOne(filter, part);
-
+            var filter = Builders<Part>.Filter.Eq(b => b.id, id);
+            await _parts.ReplaceOneAsync(filter, part);
             return part;
         }
     }

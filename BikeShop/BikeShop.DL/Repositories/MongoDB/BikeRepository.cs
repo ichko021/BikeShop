@@ -29,38 +29,37 @@ namespace BikeShop.DL.Repositories
 
 
         }
-        public Bike? AddBike(Bike bike)
+        public async Task<Bike?>? AddBike(Bike bike)
         {
-            _bikes.InsertOne(bike);
+            await _bikes.InsertOneAsync(bike);
 
             return bike;
         }
 
-        public void DeleteBikeById(string id)
+        public async Task DeleteBikeById(string id)
         {
             var filter = Builders<Bike>.Filter
                     .Eq(b => b.id, id);
 
-            _bikes.DeleteOne(filter);
+            await _bikes.DeleteOneAsync(filter);
         }
 
-        public List<Bike> GetAllBikes()
+        public async Task<List<Bike>> GetAllBikes()
         {
-            return _bikes.Find(bike => true).ToList();
+            return await _bikes.Find(bike => true).ToListAsync();
         }
 
-        public Bike? GetBikeById(string id)
+        public async Task<Bike?> GetBikeById(string id)
         {
-            return _bikes.AsQueryable()
-                        .Where(b => b.id == id).FirstOrDefault();
+            return await _bikes.Find(b => b.id == id).FirstOrDefaultAsync();
         }
 
-        public Bike? UpdateBikeById(string id, Bike bike)
+        public async Task<Bike?> UpdateBikeById(string id, Bike bike)
         {
             var filter = Builders<Bike>.Filter
                 .Eq(b => b.id, id);
 
-            _bikes.ReplaceOne(filter, bike);
+            await _bikes.ReplaceOneAsync(filter, bike);
 
             return bike;
         }

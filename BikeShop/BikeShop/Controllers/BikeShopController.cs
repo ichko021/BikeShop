@@ -23,146 +23,111 @@ namespace BikeShop.Controllers
         }
 
         [HttpGet("getAllBikes")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public IActionResult GetAllBikes()
+        public async Task<IActionResult> GetAllBikes()
         {
             try
             {
-                var result = _bikeService.GetAllBikes();
-
+                var result = await _bikeService.GetAllBikes();
                 return Ok(result);
             }
             catch (Exception ex)
             {
                 _logger.LogError($"Cannot fetch bikes. {ex.Message} | {ex.StackTrace}");
-                return BadRequest();
+                return StatusCode(500, "Internal server error");
             }
         }
 
         [HttpGet("getBikeById")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public IActionResult GetBikeById([FromQuery] string id)
+        public async Task<IActionResult> GetBikeById([FromQuery] string id)
         {
             if (string.IsNullOrEmpty(id))
-            {
                 return BadRequest(new { message = "Id can't be null or empty." });
-            }
-            else if (!Regex.IsMatch(id, "^[0-9a-f]{24}$"))
-            {
+
+            if (!Regex.IsMatch(id, "^[0-9a-f]{24}$"))
                 return BadRequest(new { message = "Id is not valid." });
-            }
-            
 
             try
             {
-                var result = _bikeService.GetBikeById(id);
-
+                var result = await _bikeService.GetBikeById(id);
                 if (result == null)
-                {
                     return NotFound();
-                }
+
                 return Ok(result);
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Cannot fetch bike by {id}. {ex.Message} | {ex.StackTrace}");
-                return BadRequest();
+                _logger.LogError($"Cannot fetch bike by id {id}. {ex.Message} | {ex.StackTrace}");
+                return StatusCode(500, "Internal server error");
             }
         }
 
         [HttpPost("addBike")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public IActionResult AddBike([FromBody] AddBikeRequest bike)
+        public async Task<IActionResult> AddBike([FromBody] AddBikeRequest bike)
         {
             var bikeDto = _mapper.Map<Bike>(bike);
 
             try
             {
-                var result = _bikeService.AddBike(bikeDto);
+                var result = await _bikeService.AddBike(bikeDto);
 
                 if (result == null)
-                {
-                    return BadRequest(result);
-                }
+                    return BadRequest("Failed to add bike");
 
                 return Ok(result);
             }
             catch (Exception ex)
             {
                 _logger.LogError($"Cannot add bike. {ex.Message} | {ex.StackTrace}");
-                return BadRequest();
+                return StatusCode(500, "Internal server error");
             }
         }
 
         [HttpPut("updateBike")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public IActionResult UpdateBikeById([FromQuery] string id, [FromBody] AddBikeRequest bike)
+        public async Task<IActionResult> UpdateBikeById([FromQuery] string id, [FromBody] AddBikeRequest bike)
         {
             if (string.IsNullOrEmpty(id))
-            {
                 return BadRequest(new { message = "Id can't be null or empty." });
-            }
-            else if (!Regex.IsMatch(id, "^[0-9a-f]{24}$"))
-            {
+
+            if (!Regex.IsMatch(id, "^[0-9a-f]{24}$"))
                 return BadRequest(new { message = "Id is not valid." });
-            }
 
             var bikeDto = _mapper.Map<Bike>(bike);
 
             try
             {
-                var result = _bikeService.UpdateBikeById(id, bikeDto);
+                var result = await _bikeService.UpdateBikeById(id, bikeDto);
+
+                if (result == null)
+                    return NotFound("Bike not found to update");
 
                 return Ok(result);
             }
             catch (Exception ex)
             {
                 _logger.LogError($"Cannot update bike by id {id}. {ex.Message} | {ex.StackTrace}");
-                return BadRequest();
+                return StatusCode(500, "Internal server error");
             }
         }
 
         [HttpDelete("deleteBike")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public IActionResult DeleteBikeById([FromQuery] string id)
+        public async Task<IActionResult> DeleteBikeById([FromQuery] string id)
         {
             if (string.IsNullOrEmpty(id))
-            {
                 return BadRequest(new { message = "Id can't be null or empty." });
-            }
-            else if (!Regex.IsMatch(id, "^[0-9a-f]{24}$"))
-            {
-                return BadRequest(new { message = "Id is not valid." });
-            }
 
+            if (!Regex.IsMatch(id, "^[0-9a-f]{24}$"))
+                return BadRequest(new { message = "Id is not valid." });
 
             try
             {
-                _bikeService.DeleteBikeById(id);
-
+                await _bikeService.DeleteBikeById(id);
                 return Ok();
-            } 
+            }
             catch (Exception ex)
             {
                 _logger.LogError($"Cannot delete bike by id {id}. {ex.Message} | {ex.StackTrace}");
-                return BadRequest();
+                return StatusCode(500, "Internal server error");
             }
-            
         }
     }
 }

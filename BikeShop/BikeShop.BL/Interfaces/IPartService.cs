@@ -9,10 +9,10 @@ namespace BikeShop.BL.Interfaces
 {
     public interface IPartService
     {
-        List<Part> GetAllParts();
-        Part? GetPartById(string id);
-        void DeletePartById(string id);
-        Part? AddPart(Part part);
-        Part? UpdatePartById(string id, Part part);
+        Task<List<Part>> GetAllParts();
+        Task<Part?> GetPartById(string id);
+        Task DeletePartById(string id);
+        Task<Part?> AddPart(Part part);
+        Task<Part?> UpdatePartById(string id, Part part);
     }
 }

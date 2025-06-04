@@ -4,10 +4,10 @@ namespace BikeShop.BL.Interfaces
 {
     public interface IBikeService
     {
-        List<Bike>? GetAllBikes();
-        Bike? GetBikeById(string id);
-        void DeleteBikeById(string id);
-        Bike? AddBike(Bike bike);
-        Bike? UpdateBikeById(string id, Bike bike);
+        Task<List<Bike>>? GetAllBikes();
+        Task<Bike?> GetBikeById(string id);
+        Task DeleteBikeById(string id);
+        Task<Bike?> AddBike(Bike bike);
+        Task<Bike?> UpdateBikeById(string id, Bike bike);
     }
 }

@@ -16,63 +16,61 @@ namespace BikeShop.BL.Services
             _logger = logger;
         }
 
-        public Part? AddPart(Part part)
+        public async Task<Part?> AddPart(Part part)
         {
             try
             {
-                return _partRepository.AddPart(part);
+                return await _partRepository.AddPart(part);
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Cannot add bike. {ex.Message} | {ex.StackTrace}");
+                _logger.LogError(ex, $"Cannot add part. {ex.Message}");
                 throw;
             }
         }
 
-        public void DeletePartById(string id)
+        public async Task DeletePartById(string id)
         {
             try
             {
-                _partRepository.DeletePartById(id);
+                await _partRepository.DeletePartById(id);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Cannot delete part by id {id}. {ex.Message} | {ex.StackTrace}");
-                throw;
-            }
-
-        }
-
-        public List<Part> GetAllParts()
-        {
-            try
-            {
-                return _partRepository.GetAllParts();
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $"Cannot fetch parts. {ex.Message} | {ex.StackTrace}");
+                _logger.LogError(ex, $"Cannot delete part by id {id}. {ex.Message}");
                 throw;
             }
         }
 
-        public Part? GetPartById(string id)
+        public async Task<List<Part>> GetAllParts()
         {
             try
             {
-                return _partRepository.GetPartById(id);
+                return await _partRepository.GetAllParts();
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Cannot fetch part by id {id}. {ex.Message} | {ex.StackTrace}");
+                _logger.LogError(ex, $"Cannot fetch parts. {ex.Message}");
                 throw;
             }
-            
         }
 
-        public Part? UpdatePartById(string id, Part part)
+        public async Task<Part?> GetPartById(string id)
         {
-            var partFetchedById = GetPartById(id);
+            try
+            {
+                return await _partRepository.GetPartById(id);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Cannot fetch part by id {id}. {ex.Message}");
+                throw;
+            }
+        }
+
+        public async Task<Part?> UpdatePartById(string id, Part part)
+        {
+            var partFetchedById = await GetPartById(id);
 
             if (partFetchedById == null)
             {
@@ -84,14 +82,13 @@ namespace BikeShop.BL.Services
 
             try
             {
-                return _partRepository.UpdatePartById(id, partFetchedById);
+                return await _partRepository.UpdatePartById(id, partFetchedById);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Cannot update part by id {id}. {ex.Message} | {ex.StackTrace}");
+                _logger.LogError(ex, $"Cannot update part by id {id}. {ex.Message}");
                 throw;
             }
         }
-        
     }
 }

@@ -1,9 +1,7 @@
 ﻿using BikeShop.BL.Interfaces;
 using BikeShop.DL.Interfaces;
-using BikeShop.DL.Repositories;
 using BikeShop.DTO.DTO;
 using Microsoft.Extensions.Logging;
-using Serilog.Core;
 
 namespace BikeShop.BL.Services
 {
@@ -18,65 +16,63 @@ namespace BikeShop.BL.Services
             _logger = logger;
         }
 
-        public Bike? AddBike(Bike bike)
+        public async Task<Bike?> AddBike(Bike bike)
         {
             try
             {
-                return _bikeRepository.AddBike(bike);
+                return await _bikeRepository.AddBike(bike);
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Cannot add bike. {ex.Message} | {ex.StackTrace}");
+                _logger.LogError(ex, $"Cannot add bike. {ex.Message}");
                 throw;
             }
         }
 
-        public void DeleteBikeById(string id)
+        public async Task DeleteBikeById(string id)
         {
-            
             try
             {
-                _bikeRepository.DeleteBikeById(id);
+                await _bikeRepository.DeleteBikeById(id);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Cannot delete bike by id {id}. {ex.Message} | {ex.StackTrace}");
+                _logger.LogError(ex, $"Cannot delete bike by id {id}. {ex.Message}");
                 throw;
             }
         }
 
-        public List<Bike>? GetAllBikes()
+        public async Task<List<Bike>?> GetAllBikes()
         {
             try
             {
-                return _bikeRepository.GetAllBikes();
+                return await _bikeRepository.GetAllBikes();
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Cannot fetch bikes. {ex.Message} | {ex.StackTrace}");
+                _logger.LogError(ex, $"Cannot fetch bikes. {ex.Message}");
                 throw;
             }
         }
 
-        public Bike? GetBikeById(string id)
+        public async Task<Bike?> GetBikeById(string id)
         {
             try
             {
-                return _bikeRepository.GetBikeById(id);
+                return await _bikeRepository.GetBikeById(id);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Cannot fetch bike by id {id}. {ex.Message} | {ex.StackTrace}");
+                _logger.LogError(ex, $"Cannot fetch bike by id {id}. {ex.Message}");
                 throw;
             }
         }
 
-        public Bike? UpdateBikeById(string id, Bike bike)
+        public async Task<Bike?> UpdateBikeById(string id, Bike bike)
         {
+            var bikeFetchedById = await GetBikeById(id);
 
-            var bikeFetchedById = GetBikeById(id);
-
-            if(bikeFetchedById == null)
+            if (bikeFetchedById == null)
             {
                 return null;
             }
@@ -88,11 +84,11 @@ namespace BikeShop.BL.Services
 
             try
             {
-                return _bikeRepository.UpdateBikeById(id, bikeFetchedById);
+                return await _bikeRepository.UpdateBikeById(id, bikeFetchedById);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Cannot update bike by id {id}. {ex.Message} | {ex.StackTrace}");
+                _logger.LogError(ex, $"Cannot update bike by id {id}. {ex.Message}");
                 throw;
             }
         }

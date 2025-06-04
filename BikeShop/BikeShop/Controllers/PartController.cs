@@ -1,5 +1,4 @@
 using BikeShop.BL.Interfaces;
-using BikeShop.BL.Services;
 using BikeShop.DTO.DTO;
 using BikeShop.DTO.Requests;
 using MapsterMapper;
@@ -24,99 +23,81 @@ namespace BikeShop.Controllers
         }
 
         [HttpGet("getAllParts")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public IActionResult GetAllParts()
+        public async Task<IActionResult> GetAllParts()
         {
             try
             {
-                var result = _partService.GetAllParts();
+                var result = await _partService.GetAllParts();
 
-                if (result == null)
+                if (result == null || result.Count == 0)
                 {
-                    return Ok();
+                    return NoContent();
                 }
 
                 return Ok(result);
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Cannot fetch parts. {ex.Message} | {ex.StackTrace}");
-                return BadRequest();
+                _logger.LogError(ex, $"Cannot fetch parts.");
+                return StatusCode(500, "Internal server error");
             }
-
-
         }
 
         [HttpGet("getPartById")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public IActionResult GetPartById([FromQuery] string id)
+        public async Task<IActionResult> GetPartById([FromQuery] string id)
         {
-            if(string.IsNullOrEmpty(id))
+            if (string.IsNullOrEmpty(id))
             {
                 return BadRequest(new { message = "Id cannot be null or empty." });
-            } 
-            else if(!Regex.IsMatch(id, "^[0-9a-f]{24}$"))
+            }
+            else if (!Regex.IsMatch(id, "^[0-9a-f]{24}$"))
             {
                 return BadRequest(new { message = "Id is not valid." });
             }
 
             try
             {
-                var result = _partService.GetPartById(id);
+                var result = await _partService.GetPartById(id);
 
                 if (result == null)
                 {
                     return NotFound();
                 }
+
                 return Ok(result);
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Cannot fetch part by id {id}. {ex.Message} | {ex.StackTrace}");
-                return BadRequest();
+                _logger.LogError(ex, $"Cannot fetch part by id {id}.");
+                return StatusCode(500, "Internal server error");
             }
-
         }
 
         [HttpPost("addNewPart")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public IActionResult AddPart([FromBody] AddPartRequest part)
+        public async Task<IActionResult> AddPart([FromBody] AddPartRequest part)
         {
             var partDto = _mapper.Map<Part>(part);
 
             try
             {
-                var result = _partService.AddPart(partDto);
+                var result = await _partService.AddPart(partDto);
 
                 if (result == null)
                 {
-                    return BadRequest(result);
+                    return BadRequest("Failed to add part.");
                 }
 
                 return Ok(result);
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Cannot add part. {ex.Message} | {ex.StackTrace}");
-                return BadRequest();
+                _logger.LogError(ex, $"Cannot add part.");
+                return StatusCode(500, "Internal server error");
             }
         }
 
         [HttpPut("updatePart")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public IActionResult UpdatePartById([FromQuery] string id, [FromBody] AddPartRequest part)
+        public async Task<IActionResult> UpdatePartById([FromQuery] string id, [FromBody] AddPartRequest part)
         {
             if (string.IsNullOrEmpty(id))
             {
@@ -131,28 +112,24 @@ namespace BikeShop.Controllers
 
             try
             {
-                var result = _partService.UpdatePartById(id, partDto);
+                var result = await _partService.UpdatePartById(id, partDto);
 
                 if (result == null)
                 {
-                    return NotFound();
+                    return NotFound("Part not found to update.");
                 }
 
                 return Ok(result);
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Cannot update part by id {id}. {ex.Message} | {ex.StackTrace}");
-                return BadRequest();
+                _logger.LogError(ex, $"Cannot update part by id {id}.");
+                return StatusCode(500, "Internal server error");
             }
         }
 
         [HttpDelete("deletePart")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public IActionResult DeletePartById([FromQuery] string id)
+        public async Task<IActionResult> DeletePartById([FromQuery] string id)
         {
             if (string.IsNullOrEmpty(id))
             {
@@ -163,10 +140,16 @@ namespace BikeShop.Controllers
                 return BadRequest(new { message = "Id is not valid." });
             }
 
-
-            _partService.DeletePartById(id);
-
-            return Ok();
+            try
+            {
+                await _partService.DeletePartById(id);
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Cannot delete part by id {id}.");
+                return StatusCode(500, "Internal server error");
+            }
         }
     }
 }
