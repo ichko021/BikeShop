@@ -1,4 +1,4 @@
-﻿using BikeShop.DTO.DTO;
+﻿using BikeShop.DTO.POCO;
 using BikeShop.DTO.Requests;
 using Mapster;
 

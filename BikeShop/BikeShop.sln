@@ -11,7 +11,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BikeShop.DL", "BikeShop.DL\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BikeShop.BL", "BikeShop.BL\BikeShop.BL.csproj", "{9907947D-E56E-43EE-84E7-12CE7EC06A7B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BikeShop.Tests", "BikeShop.Tests\BikeShop.Tests.csproj", "{FE7551E4-EA53-4C93-912E-29E5B4E0C4CC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BikeShop.Tests", "BikeShop.Tests\BikeShop.Tests.csproj", "{FE7551E4-EA53-4C93-912E-29E5B4E0C4CC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

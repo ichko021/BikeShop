@@ -1,4 +1,4 @@
-﻿using BikeShop.DTO.DTO;
+﻿using BikeShop.DTO.POCO;
 using System;
 using System.Collections.Generic;
 using System.Linq;

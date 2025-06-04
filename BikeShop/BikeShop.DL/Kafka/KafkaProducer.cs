@@ -1,36 +1,72 @@
-﻿using Confluent.Kafka;
+﻿using BikeShop.DTO.Configurations;
+using BikeShop.DTO.POCO;
+using BikeShop.DTO.Serialization;
+using BikeStore.DL.Kafka;
+using Confluent.Kafka;
 using Microsoft.Extensions.Options;
 
 namespace BikeShop.DL.Kafka
 {
-    public class KafkaProducer
+    internal class KafkaProducer<TKey, TData, TConfiguration> : IKafkaProducer<TData> where TData : ICacheItem<TKey> where TKey : notnull
+        where TConfiguration : CacheConfiguration
     {
-        private readonly IProducer<Null, string> _producer;
-        private readonly string _topic;
+        private readonly ProducerConfig _config;
+        private readonly IProducer<TKey, TData> _producer;
+        private readonly IOptionsMonitor<TConfiguration> _kafkaConfig;
 
-        public KafkaProducer(IOptions<KafkaSettings> kafkaSettings)
+        public KafkaProducer(IOptionsMonitor<TConfiguration> kafkaConfig)
         {
-            var config = new ProducerConfig
+            _config = new ProducerConfig()
             {
-                BootstrapServers = kafkaSettings.Value?.BootstrapServers ?? "localhost:9092"
+                BootstrapServers = "localhost:9092"
             };
 
-            _producer = new ProducerBuilder<Null, string>(config).Build();
-            _topic = kafkaSettings.Value?.Topic ?? "cache-events";
+            _producer = new ProducerBuilder<TKey, TData>(_config)
+                .SetValueSerializer(new MessagePackSerializer<TData>())
+                .Build();
+            _kafkaConfig = kafkaConfig;
         }
 
-        public async Task ProduceAsync(string message)
+        public async Task Produce(TData message)
         {
-            try
+            await _producer.ProduceAsync(_kafkaConfig.CurrentValue.Topic, new Message<TKey, TData>
             {
-                var result = await _producer.ProduceAsync(_topic, new Message<Null, string> { Value = message });
-                Console.WriteLine($"Message delivered to: {result.TopicPartitionOffset}");
+                Key = message.GetKey(),
+                Value = message
+            });
+        }
+
+        public async Task ProduceAll(IEnumerable<TData> messages)
+        {
+            //var tasks = messages.Select(message => Produce(message));
+
+            //await Task.WhenAll(tasks);
+
+            await ProduceBatches(messages);
+        }
+
+        public async Task ProduceBatches(IEnumerable<TData> messages)
+        {
+            const int batchSize = 50;
+            var batch = new List<Task>();
+
+            foreach (var message in messages)
+            {
+                batch.Add(Produce(message));
+
+                if (batch.Count == batchSize)
+                {
+                    await Task.WhenAll(batch);
+                    batch.Clear();
+                }
             }
-            catch (ProduceException<Null, string> e)
+
+            // Process any remaining messages
+            if (batch.Count > 0)
             {
-                Console.WriteLine($"Delivery failed: {e.Error.Reason}");
-                throw;
+                await Task.WhenAll(batch);
             }
         }
+
     }
 }

@@ -1,6 +1,6 @@
 ﻿using BikeShop.DL.Interfaces;
 using BikeShop.DTO.Configurations;
-using BikeShop.DTO.DTO;
+using BikeShop.DTO.POCO;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using MongoDB.Driver;
@@ -29,6 +29,14 @@ namespace BikeShop.DL.Repositories
 
 
         }
+
+        public async Task<IEnumerable<Bike?>> DifLoad(DateTime lastExecuted)
+        {
+            var result = await _bikes.FindAsync(m => m.DateInserted >= lastExecuted);
+
+            return await result.ToListAsync();
+        }
+
         public async Task<Bike?>? AddBike(Bike bike)
         {
             await _bikes.InsertOneAsync(bike);
@@ -47,6 +55,11 @@ namespace BikeShop.DL.Repositories
         public async Task<List<Bike>> GetAllBikes()
         {
             return await _bikes.Find(bike => true).ToListAsync();
+        }
+
+        public async Task<IEnumerable<Bike>> FullLoad()
+        {
+            return await GetAllBikes();
         }
 
         public async Task<Bike?> GetBikeById(string id)

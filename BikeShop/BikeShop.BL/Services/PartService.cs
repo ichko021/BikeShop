@@ -1,6 +1,6 @@
 ﻿using BikeShop.BL.Interfaces;
 using BikeShop.DL.Interfaces;
-using BikeShop.DTO.DTO;
+using BikeShop.DTO.POCO;
 using Microsoft.Extensions.Logging;
 
 namespace BikeShop.BL.Services

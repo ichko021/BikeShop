@@ -3,6 +3,8 @@ using Mapster;
 using FluentValidation;
 using BikeShop.Validators;
 using FluentValidation.AspNetCore;
+using BikeShop.DL;
+using BikeShop.BL;
 
 namespace BikeShop
 {
@@ -13,12 +15,17 @@ namespace BikeShop
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
-            builder.Services.AddConfiguration(builder.Configuration);
-            builder.Services.AddControllers();
-            builder.Services.RegisterServices();
-            builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen();
+            builder.Services
+                .AddConfiguration(builder.Configuration)
+                .AddDataDependencies(builder.Configuration)
+                .AddBusinessDependencies();
+
             builder.Services.AddMapster();
+
+            builder.Services.AddFluentValidationAutoValidation();
+
+            builder.Services.AddControllers();
+            builder.Services.AddSwaggerGen();
             MapsterConfig.MapsterConfig.Configure();
             builder.Services.AddValidatorsFromAssemblyContaining<AddBikeRequestValidator>();
             builder.Services.AddValidatorsFromAssemblyContaining<AddPartRequestValidator>();
@@ -36,13 +43,13 @@ namespace BikeShop
 
             app.UseAuthorization();
 
+            app.UseMiddleware<ExceptionHandlingMiddleware>();
+
             app.UseSwagger();
             
             app.UseSwaggerUI();
 
             app.MapControllers();
-
-            app.UseMiddleware<ExceptionHandlingMiddleware>();
 
             app.MapHealthChecks("/healthz");
 

@@ -1,5 +1,5 @@
 using BikeShop.BL.Interfaces;
-using BikeShop.DTO.DTO;
+using BikeShop.DTO.POCO;
 using BikeShop.DTO.Requests;
 using MapsterMapper;
 using Microsoft.AspNetCore.Mvc;

@@ -2,14 +2,16 @@
 
 namespace BikeShop.ServiceExtensions
 {
-    public static class ServiceConfigurationsExtensions
+    public static class DependencyInjection
     {
         public static IServiceCollection AddConfiguration(
             this IServiceCollection services,
-            IConfiguration configuration)  
+            IConfiguration configuration)
         {
-            return services.Configure<MongoDbConfig>(
+            services.Configure<MongoDbConfig>(
                 configuration.GetSection(nameof(MongoDbConfig)));
+
+            return services;
         }
     }
 }

@@ -1,6 +1,6 @@
 ﻿using BikeShop.DL.Interfaces;
 using BikeShop.DTO.Configurations;
-using BikeShop.DTO.DTO;
+using BikeShop.DTO.POCO;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using MongoDB.Driver;
