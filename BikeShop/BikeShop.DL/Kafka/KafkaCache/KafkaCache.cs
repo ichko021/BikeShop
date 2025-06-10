@@ -43,6 +43,7 @@ namespace BikeShop.DL.Kafka.KafkaCache
 
                     if (consumeResult.IsPartitionEOF)
                     {
+                        Console.WriteLine($"Cached: {consumeResult.Key}");
                         continue;
                     }
 
