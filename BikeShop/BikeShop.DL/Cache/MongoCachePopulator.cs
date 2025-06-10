@@ -27,47 +27,30 @@ namespace BikeShop.DL.Cache
         {
             var lastExecuted = DateTime.UtcNow;
 
-            try
-            {
-                var result = await _cacheRepository.FullLoad();
+            var result = await _cacheRepository.FullLoad();
 
-                if (result != null && result.Any())
-                {
-                    await _kafkaProducer.ProduceAll(result);
-                }
-            }
-            catch (Exception ex)
+            if (result != null && result.Any())
             {
-                // Log but don't crash the service
-                Console.WriteLine($"[CachePopulator] Initial load failed: {ex.Message}");
+                await _kafkaProducer.ProduceAll(result);
             }
 
             while (!stoppingToken.IsCancellationRequested)
             {
-                try
-                {
-                    await Task.Delay(
-                        TimeSpan.FromSeconds(_configuration.CurrentValue.RefreshInterval),
-                        stoppingToken);
+                await Task.Delay(TimeSpan.FromSeconds(_configuration.CurrentValue.RefreshInterval), stoppingToken);
 
-                    var updatedData = await _cacheRepository.DifLoad(lastExecuted);
+                var updatedData = await _cacheRepository.DifLoad(lastExecuted);
 
-                    if (updatedData != null && updatedData.Any())
-                    {
-                        await _kafkaProducer.ProduceAll(updatedData);
-                        lastExecuted = updatedData.Last()?.DateInserted ?? DateTime.UtcNow;
-                    }
-                }
-                catch (TaskCanceledException)
+                if (updatedData == null || !updatedData.Any())
                 {
-                    // Graceful shutdown
-                    break;
+                    continue;
                 }
-                catch (Exception ex)
-                {
-                    // Log and keep looping
-                    Console.WriteLine($"[CachePopulator] Error during loop: {ex.Message}");
-                }
+
+                await _kafkaProducer.ProduceAll(updatedData);
+
+                var lastUpdated = updatedData.Last()?.DateInserted;
+
+                lastExecuted = lastUpdated ?? DateTime.UtcNow;
+
             }
         }
     }

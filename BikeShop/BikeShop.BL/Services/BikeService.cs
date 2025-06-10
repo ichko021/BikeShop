@@ -9,11 +9,13 @@ namespace BikeShop.BL.Services
     {
         private readonly IBikeRepository _bikeRepository;
         private readonly ILogger<BikeService> _logger;
+        private readonly IShopLocationGateway _locationGateway;
 
-        public BikeService(IBikeRepository bikeRepository, ILogger<BikeService> logger)
+        public BikeService(IBikeRepository bikeRepository, ILogger<BikeService> logger, IShopLocationGateway locationGateway)
         {
             _bikeRepository = bikeRepository;
             _logger = logger;
+            _locationGateway = locationGateway;
         }
 
         public async Task<Bike?> AddBike(Bike bike)
@@ -47,6 +49,19 @@ namespace BikeShop.BL.Services
             try
             {
                 return await _bikeRepository.GetAllBikes();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Cannot fetch bikes. {ex.Message}");
+                throw;
+            }
+        }
+
+        public async Task<string> GetLocations()
+        {
+            try
+            {
+                return await _locationGateway.GetAllLocations();
             }
             catch (Exception ex)
             {

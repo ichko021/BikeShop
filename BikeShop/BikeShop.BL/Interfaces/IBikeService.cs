@@ -9,5 +9,6 @@ namespace BikeShop.BL.Interfaces
         Task DeleteBikeById(string id);
         Task<Bike?> AddBike(Bike bike);
         Task<Bike?> UpdateBikeById(string id, Bike bike);
+        Task<string> GetLocations();
     }
 }

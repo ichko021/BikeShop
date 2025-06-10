@@ -12,5 +12,6 @@ namespace BikeShop.DTO.Requests
         public string model { get; set; }
         public double price { get; set; }
         public int availabilityInStore { get; set; }
+        public DateTime DateInserted {  get; set; }
     }
 }

@@ -22,34 +22,36 @@ namespace BikeShop.DL.Kafka.KafkaCache
             };
         }
 
-        protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+        protected override Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            using var consumer = new ConsumerBuilder<TKey, TValue>(_config)
-                .SetValueDeserializer(new MessagePackDeserializer<TValue>())
-                .Build();
+            Task.Run(() => ConsumeMessages(stoppingToken), stoppingToken);
 
-            consumer.Subscribe("cache-events");
+            return Task.CompletedTask;
+        }
 
-            while (!stoppingToken.IsCancellationRequested)
+        private void ConsumeMessages(CancellationToken stoppingToken)
+        {
+            using (var consumer = new ConsumerBuilder<TKey, TValue>(_config)
+              .SetValueDeserializer(new MessagePackDeserializer<TValue>())
+              .Build())
             {
-                try
-                {
-                    var result = consumer.Consume(TimeSpan.FromMilliseconds(500));
+                consumer.Subscribe("cache-events");
 
-                    if (result == null || result.IsPartitionEOF)
+                while (!stoppingToken.IsCancellationRequested)
+                {
+                    var consumeResult = consumer.Consume();
+
+                    if (consumeResult.IsPartitionEOF)
+                    {
                         continue;
+                    }
 
-                    // Process message
-                    Console.WriteLine($"Consumed: {result.Message.Key}");
-                }
-                catch (ConsumeException ex)
-                {
-                    Console.WriteLine($"Kafka consume error: {ex.Error.Reason}");
-                    await Task.Delay(1000, stoppingToken); // optional backoff
+                    if (consumeResult != null)
+                    {
+                        Console.WriteLine($"Error: {consumeResult.Message.Key}");
+                    }
                 }
             }
-
-            consumer.Close(); // clean shutdown
         }
 
     }

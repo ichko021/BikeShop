@@ -10,6 +10,6 @@ namespace BikeShop.DTO.Configurations
     {
         public string Topic { get; set; } = string.Empty;
 
-        public int RefreshInterval { get; set; } = 30;
+        public int RefreshInterval { get; set; } = 1;
     }
 }

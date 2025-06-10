@@ -37,6 +37,21 @@ namespace BikeShop.Controllers
             }
         }
 
+        [HttpGet("getLocations")]
+        public async Task<IActionResult> GetLocations()
+        {
+            try
+            {
+                var result = await _bikeService.GetLocations();
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Cannot fetch locations. {ex.Message} | {ex.StackTrace}");
+                return StatusCode(500, "Internal server error");
+            }
+        }
+
         [HttpGet("getBikeById")]
         public async Task<IActionResult> GetBikeById([FromQuery] string id)
         {

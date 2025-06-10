@@ -1,13 +1,14 @@
-﻿using BikeShop.DL.Interfaces;
-using BikeShop.DL.Repositories;
+﻿using BikeShop.DL.Cache;
+using BikeShop.DL.Interfaces;
 using BikeShop.DL.Kafka;
-using Microsoft.Extensions.DependencyInjection;
 using BikeShop.DL.Kafka.KafkaCache;
-using BikeShop.DL.Cache;
+using BikeShop.DL.Repositories;
+using BikeShop.DL.Repositories.MongoDB;
 using BikeShop.DTO.Configurations;
 using BikeShop.DTO.POCO;
 using BikeStore.DL.Kafka;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace BikeShop.DL
 {
@@ -18,17 +19,11 @@ namespace BikeShop.DL
         {
             services.AddSingleton<IBikeRepository, BikeRepository>();
             services.AddSingleton<IPartRepository, PartRepository>();
-
-            //services.AddHostedService<MongoCacheDistributor>();
-            //services.AddSingleton<ICacheRepository<Movie>, MoviesRepository>();
+            services.AddSingleton<IShopLocationGateway, ShopLocationGateway>();
 
             services.AddCache<BikeCacheConfiguration, BikeRepository, Bike, string>(config);
 
-            //Console.WriteLine("starting kafka");
             services.AddHostedService<KafkaCache<string, Bike>>();
-            //Console.WriteLine("kafka started");
-
-            //services.AddCache<ComposerCacheConfiguration, ComposerRepository, Composer, int>(config);
 
             return services;
         }

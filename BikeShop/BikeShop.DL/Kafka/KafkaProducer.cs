@@ -38,10 +38,6 @@ namespace BikeShop.DL.Kafka
 
         public async Task ProduceAll(IEnumerable<TData> messages)
         {
-            //var tasks = messages.Select(message => Produce(message));
-
-            //await Task.WhenAll(tasks);
-
             await ProduceBatches(messages);
         }
 
@@ -61,7 +57,6 @@ namespace BikeShop.DL.Kafka
                 }
             }
 
-            // Process any remaining messages
             if (batch.Count > 0)
             {
                 await Task.WhenAll(batch);

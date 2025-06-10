@@ -30,11 +30,16 @@ namespace BikeShop.DL.Repositories
 
         }
 
+        protected async Task<IEnumerable<Bike?>> GetBikesAfterDate(DateTime date)
+        {
+            var result = await _bikes.Find(m => m.DateInserted >= date).ToListAsync();
+
+            return result;
+        }
+
         public async Task<IEnumerable<Bike?>> DifLoad(DateTime lastExecuted)
         {
-            var result = await _bikes.FindAsync(m => m.DateInserted >= lastExecuted);
-
-            return await result.ToListAsync();
+            return await GetBikesAfterDate(lastExecuted);
         }
 
         public async Task<Bike?>? AddBike(Bike bike)
